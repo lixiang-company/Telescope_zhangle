@@ -17,6 +17,6 @@ venv/
 *.csv
 *.xml
 *.tmp
-./output
-./idea
-./cache
+./output/*
+./idea/*
+./cache/*
