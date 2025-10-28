@@ -1,0 +1,144 @@
+<!-- 分析概览 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>分析概览</h2>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{total_files}</div>
+            <div class="stat-label">总文件数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{valid_files}</div>
+            <div class="stat-label">有效文件数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{project_count}</div>
+            <div class="stat-label">项目数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{core_count}</div>
+            <div class="stat-label">CPU核心数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{trap_count}</div>
+            <div class="stat-label">TRAP重启数</div>
+        </div>
+    </div>
+</div>
+
+<!-- 项目信息已移至导航栏标题中 -->
+
+<!-- 数据可视化分析 -->
+<div class="section charts-section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>CPU负载率分析</h2>
+    </div>
+    
+    <!-- 核负载率统计图表 -->
+    <div class="chart-wrapper">
+        <h3>CPU核心负载率统计</h3>
+        <div id="coreLoadsChart" class="chart-container"></div>
+    </div>
+    
+    <!-- 项目对比图表 -->
+    <div class="chart-wrapper">
+        <h3>项目负载率对比</h3>
+        <div id="comparisonChart" class="chart-container"></div>
+    </div>
+    
+    <!-- 趋势分析图表 -->
+    <div class="chart-wrapper">
+        <h3>CPU负载率趋势分析</h3>
+        <div id="trendChart" class="chart-container"></div>
+    </div>
+    
+    <!-- TRAP重启图表 -->
+    <div class="chart-wrapper">
+        <h3>TRAP重启事件分析</h3>
+        <div id="trapRestartChart" class="chart-container"></div>
+    </div>
+</div>
+
+<!-- 核负载率统计表格 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>CPU核心负载率统计</h2>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>核心编号</th>
+                    <th>平均负载率(%)</th>
+                    <th>最大负载率(%)</th>
+                    <th>最小负载率(%)</th>
+                    <th>负载状态</th>
+                </tr>
+            </thead>
+            <tbody id="loadStatsTableBody">
+                {load_stats_rows}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- TRAP重启信息 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>TRAP重启事件信息</h2>
+    </div>
+    <div class="trap-info-container">
+        <div class="trap-summary">
+            <p><strong>TRAP重启次数:</strong> <span id="trapCountDisplay">{trap_count}</span></p>
+            <p><strong>重启类型:</strong> <span id="trapTypesDisplay">{trap_types_text}</span></p>
+            <p><strong>涉及函数:</strong> <span id="trapFunctionsDisplay">{trap_functions_text}</span></p>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>重启类型</th>
+                        <th>DEADD地址</th>
+                        <th>函数地址</th>
+                        <th>参数名</th>
+                        <th>函数名</th>
+                        <th>重启原因</th>
+                    </tr>
+                </thead>
+                <tbody id="trapInfoTableBody">
+                    {trap_info_rows}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 文件详情表格 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>文件详情</h2>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>文件名</th>
+                    <th>项目名</th>
+                    <th>基线版本</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody id="fileDetailsTableBody">
+                {file_details_rows}
+            </tbody>
+        </table>
+    </div>
+</div>

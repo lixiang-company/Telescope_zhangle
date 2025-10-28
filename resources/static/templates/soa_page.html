@@ -1,0 +1,130 @@
+<!-- SOA数据概览 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>SOA数据概览</h2>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="topicCount">{soa_topic_count}</div>
+            <div class="stat-label">Topic数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="dataPoints">{soa_data_points}</div>
+            <div class="stat-label">数据点数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="fileCount">{soa_file_count}</div>
+            <div class="stat-label">包含SOA数据文件</div>
+        </div>
+    </div>
+</div>
+
+<!-- SOA Topic选择器 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>SOA Topic数据分析</h2>
+    </div>
+    <div class="topic-selector">
+        <label for="topicSelect">选择Topic:</label>
+        <select id="topicSelect" class="topic-dropdown">
+            <option value="">请选择Topic...</option>
+            <!-- Topic选项将通过JavaScript动态填充 -->
+        </select>
+        <div class="topic-info" id="topicInfo">
+            <p>请从下拉菜单中选择一个Topic来查看详细数据</p>
+        </div>
+    </div>
+</div>
+
+<!-- SOA数据可视化 -->
+{soa_charts_section}
+
+<!-- SOA汇总统计表格 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>SOA汇总统计信息</h2>
+    </div>
+    <div class="table-container">
+        <table class="data-table" id="soaSummaryTable">
+            <thead>
+                <tr>
+                    <th>统计项目</th>
+                    <th>数值</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody id="soaSummaryTableBody">
+                <!-- 汇总统计信息将通过JavaScript动态填充 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Topic详细统计信息 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>Topic详细统计信息</h2>
+        <div class="section-actions">
+            <button id="expandTopicBtn" class="btn btn-primary">展开全部</button>
+            <button id="collapseTopicBtn" class="btn btn-secondary">收起</button>
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="data-table" id="soaTopicDetailTable">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>Topic名称</th>
+                    <th>发送总包数</th>
+                    <th>接收总包数</th>
+                    <th>丢失总包数</th>
+                    <th>数据状态</th>
+                    <th>详细信息</th>
+                </tr>
+            </thead>
+            <tbody id="soaTopicDetailTableBody">
+                <!-- Topic详细统计信息将通过JavaScript动态填充 -->
+            </tbody>
+        </table>
+        <div class="table-footer">
+            <span id="topicTableInfo">显示前10行，点击"展开全部"查看更多</span>
+        </div>
+    </div>
+</div>
+
+<!-- SOA详细日志信息 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>SOA详细日志信息</h2>
+        <div class="section-actions">
+            <button id="expandLogBtn" class="btn btn-primary">展开全部</button>
+            <button id="collapseLogBtn" class="btn btn-secondary">收起</button>
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="data-table" id="soaLogDetailTable">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>文件名</th>
+                    <th>行号</th>
+                    <th>原始日志</th>
+                    <th>数据类型</th>
+                </tr>
+            </thead>
+            <tbody id="soaLogDetailTableBody">
+                <!-- SOA详细日志信息将通过JavaScript动态填充 -->
+            </tbody>
+        </table>
+        <div class="table-footer">
+            <span id="logTableInfo">显示前10行，点击"展开全部"查看更多</span>
+        </div>
+    </div>
+</div>
+
+<!-- SOA页面交互功能将通过模板管理器动态生成 -->

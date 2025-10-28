@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <!-- 引入ECharts -->
+    <script src="static/echarts.min.js"></script>
+    <link rel="stylesheet" href="static/main.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="nav-logo">🔍</span>
+                <span class="nav-title">ECU日志分析系统</span>
+                <div class="nav-project-info">
+                    <span class="project-name">{project_name}</span>
+                    <span class="baseline-version">{baseline_version}</span>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <a href="analysis_report_{timestamp}.html" class="nav-link" id="nav-ecu">
+                    <span class="nav-icon">📊</span>
+                    ECU分析报告
+                </a>
+                <a href="soa_analysis_{timestamp}.html" class="nav-link" id="nav-soa">
+                    <span class="nav-icon">📡</span>
+                    SOA分析报告
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>{page_title}</h1>
+            <div class="subtitle">{subtitle}</div>
+            <div class="nav-tabs">{nav_tabs}</div>
+        </div>
+        <div class="content">{content}</div>
+    </div>
+    
+    <script>{chart_scripts}</script>
+</body>
+</html>
