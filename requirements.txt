@@ -1,0 +1,6 @@
+# 核心依赖
+dataclasses>=0.6
+typing-extensions>=3.7.4
+
+# 性能优化（可选）
+psutil>=5.7.0
