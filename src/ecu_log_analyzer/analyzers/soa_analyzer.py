@@ -225,13 +225,18 @@ class SOAAnalyzer(BaseAnalyzer):
                         if base_idx + i < len(full_drop_counts):
                             full_drop_counts[base_idx + i] = count
                 
-                # 为每个Topic提取丢失数据（只使用第一个索引，避免重复）
+                # 为每个Topic提取丢失数据
                 for topic_name, indices in topic_name_to_indices.items():
                     topic_data = self.topic_data_dict[topic_name]
                     
-                    # 只使用第一个索引对应的丢失数据（避免重复添加）
+                    # 第一个索引对应丢失数据（第一次出现）
                     if len(indices) > 0 and indices[0] < len(full_drop_counts):
                         drop_count = full_drop_counts[indices[0]]
+                        topic_data.drop_counts.append((timestamp, drop_count))
+                    
+                    # 第二个索引对应丢失数据（第二次出现，如果存在）
+                    if len(indices) > 1 and indices[1] < len(full_drop_counts):
+                        drop_count = full_drop_counts[indices[1]]
                         topic_data.drop_counts.append((timestamp, drop_count))
         
         self.logger.info(f"成功处理 {len(self.topic_data_dict)} 个Topic的SOA数据")
@@ -275,13 +280,45 @@ class SOAAnalyzer(BaseAnalyzer):
             has_drop_data = any(count > 0 for _, count in topic_data.drop_counts)
             
             if has_receive_data or has_send_data or has_drop_data:
-                # 每条折线独立，0值用null替换（但丢失数据保留0值以便显示）
-                # 接收数据：0值替换为null
-                recv_data = [[t, count if count > 0 else None] for t, count in topic_data.receive_counts]
-                # 发送数据：0值替换为null
-                send_data = [[t, count if count > 0 else None] for t, count in topic_data.send_counts]
-                # 丢失数据：保留0值（不转换为null），以便在图表中显示为y=0的折线
-                lost_data = [[t, count] for t, count in topic_data.drop_counts]
+                # 准备数据 - 收集所有时间戳（包括接收、发送和丢失数据的时间戳）
+                all_timestamps = set()
+                for t, _ in topic_data.receive_counts:
+                    all_timestamps.add(t)
+                for t, _ in topic_data.send_counts:
+                    all_timestamps.add(t)
+                for t, _ in topic_data.drop_counts:
+                    all_timestamps.add(t)
+                
+                timestamps = sorted(list(all_timestamps))
+                recv_counts = []
+                send_counts = []
+                lost_counts = []
+                
+                # 为每个时间点准备数据
+                for t in timestamps:
+                    # 接收数据
+                    recv_count = 0
+                    for recv_t, recv_c in topic_data.receive_counts:
+                        if recv_t == t:
+                            recv_count = recv_c
+                            break
+                    recv_counts.append(recv_count)
+                    
+                    # 发送数据
+                    send_count = 0
+                    for send_t, send_c in topic_data.send_counts:
+                        if send_t == t:
+                            send_count = send_c
+                            break
+                    send_counts.append(send_count)
+                    
+                    # 丢失数据
+                    lost_count = 0
+                    for drop_t, drop_c in topic_data.drop_counts:
+                        if drop_t == t:
+                            lost_count = drop_c
+                            break
+                    lost_counts.append(lost_count)
                 
                 # 生成v-charts数据
                 chart_data = {
@@ -296,55 +333,48 @@ class SOAAnalyzer(BaseAnalyzer):
                         }
                     },
                     "legend": {
-                        "data": [], "top": 30
+                        "data": ["接收数据", "发送数据"],
+                        "top": 30
                     },
                     "xAxis": {
-                        "type": "time"
+                        "type": "category",
+                        "data": timestamps
                     },
                     "yAxis": {
                         "type": "value",
-                        "name": "数据量"
+                        "name": "数据包数量"
                     },
-                    "series": []
+                    "series": [
+                        {
+                            "name": "接收数据",
+                            "type": "line",
+                            "data": recv_counts,
+                            "itemStyle": {"color": "#91cc75"},
+                            "lineStyle": {"width": 2},
+                            "symbol": "rect"
+                        },
+                        {
+                            "name": "发送数据",
+                            "type": "line",
+                            "data": send_counts,
+                            "itemStyle": {"color": "#5470c6"},
+                            "lineStyle": {"width": 2},
+                            "symbol": "circle"
+                        }
+                    ]
                 }
                 
-                # 添加接收数据系列（如果有非零数据）
-                if has_receive_data:
-                    chart_data["series"].append({
-                        "name": "接收数据",
-                        "type": "line",
-                        "data": recv_data,
-                        "itemStyle": {"color": "#91cc75"},
-                        "lineStyle": {"width": 2},
-                        "symbol": "rect",
-                        "connectNulls": False
-                    })
-                    chart_data["legend"]["data"].append("接收数据")
-                
-                # 添加发送数据系列（如果有非零数据）
-                if has_send_data:
-                    chart_data["series"].append({
-                        "name": "发送数据",
-                        "type": "line",
-                        "data": send_data,
-                        "itemStyle": {"color": "#5470c6"},
-                        "lineStyle": {"width": 2},
-                        "symbol": "circle",
-                        "connectNulls": False
-                    })
-                    chart_data["legend"]["data"].append("发送数据")
-                
-                # 添加丢失数据系列（始终添加，即使全为0也显示y=0的折线）
-                if lost_data:
+                # 如果有丢失数据，添加丢失数据系列
+                if any(lost_counts):
                     chart_data["series"].append({
                         "name": "丢失数据",
                         "type": "line",
-                        "data": lost_data,
+                        "data": lost_counts,
                         "itemStyle": {"color": "#ee6666"},
                         "lineStyle": {"width": 2},
-                        "symbol": "x",
-                        "connectNulls": False
+                        "symbol": "x"
                     })
+                    # 更新图例数据
                     chart_data["legend"]["data"].append("丢失数据")
                 
                 charts_data[topic_name] = chart_data
@@ -402,7 +432,6 @@ class SOAAnalyzer(BaseAnalyzer):
                         total_lost[i] += count
                         break
         
-        # 保留所有时间点（包括值为0的合法数据），仅在不存在任何数据记录时不加入时间点
         self.logger.info(f"SOA汇总图表数据生成: {len(timestamps)} 个时间点, 总接收: {sum(total_recv)}, 总发送: {sum(total_send)}, 总丢失: {sum(total_lost)}")
         
         # 生成v-charts数据
@@ -436,7 +465,7 @@ class SOAAnalyzer(BaseAnalyzer):
                     "data": total_recv,
                     "itemStyle": {"color": "#91cc75"},
                     "lineStyle": {"width": 2},
-                    "connectNulls": False
+                    "symbol": "rect"
                 },
                 {
                     "name": "总发送数据",
@@ -444,7 +473,7 @@ class SOAAnalyzer(BaseAnalyzer):
                     "data": total_send,
                     "itemStyle": {"color": "#5470c6"},
                     "lineStyle": {"width": 2},
-                    "connectNulls": False
+                    "symbol": "circle"
                 }
             ]
         }
@@ -465,39 +494,35 @@ class SOAAnalyzer(BaseAnalyzer):
         return chart_data
 
     def generate_statistics(self) -> Dict[str, Any]:
-        """生成SOA统计信息（按Summary_Report.json中的topic列表计数，允许重复）"""
-        topic_count = len(self.topic_list)
+        """生成SOA统计信息"""
+        total_topics = len(self.topic_data_dict)
         topics_with_data = 0
         topics_without_data = 0
         total_data_points = 0
         
-        # 逐个topic（按原顺序）统计是否有数据，重复也单独计数
-        for topic_name in self.topic_list:
-            td = self.topic_data_dict.get(topic_name)
-            has_receive_data = False
-            has_send_data = False
-            has_drop_data = False
-            if td:
-                has_receive_data = any(count > 0 for _, count in td.receive_counts)
-                has_send_data = any(count > 0 for _, count in td.send_counts)
-                has_drop_data = any(count > 0 for _, count in td.drop_counts)
-                # 数据点数量（不去重，累计唯一topic的数据点）
-                total_data_points += len(td.receive_counts)
-                total_data_points += len(td.send_counts)
-                total_data_points += len(td.drop_counts)
+        for topic_data in self.topic_data_dict.values():
+            # 检查Topic是否有实际数据
+            has_receive_data = any(count > 0 for _, count in topic_data.receive_counts)
+            has_send_data = any(count > 0 for _, count in topic_data.send_counts)
+            has_drop_data = any(count > 0 for _, count in topic_data.drop_counts)
             
             if has_receive_data or has_send_data or has_drop_data:
                 topics_with_data += 1
             else:
                 topics_without_data += 1
+            
+            # 计算数据点数量
+            total_data_points += len(topic_data.receive_counts)
+            total_data_points += len(topic_data.send_counts)
+            total_data_points += len(topic_data.drop_counts)
         
-        # 总丢失数据按唯一topic累计
+        # 计算总丢失数据
         total_lost_data = 0
-        for td in self.topic_data_dict.values():
-            total_lost_data += sum(count for _, count in td.drop_counts)
+        for topic_data in self.topic_data_dict.values():
+            total_lost_data += sum(count for _, count in topic_data.drop_counts)
         
         return {
-            "topic_count": topic_count,
+            "topic_count": total_topics,
             "data_points": total_data_points,
             "topics_with_data": topics_with_data,
             "topics_without_data": topics_without_data,
