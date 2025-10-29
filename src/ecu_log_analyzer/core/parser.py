@@ -134,7 +134,9 @@ class LogParser:
         log_files = []
         for root, _dirs, files in os.walk(directory):
             for name in files:
-                if any(name.lower().endswith(ext) for ext in self.cfg.system.log_extensions):
+                # 兼容无后缀文件
+                has_ext = os.path.splitext(name)[1] != ""
+                if any(name.lower().endswith(ext) for ext in self.cfg.system.log_extensions) or not has_ext:
                     log_files.append(os.path.join(root, name))
         
         if not log_files:
