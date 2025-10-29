@@ -148,8 +148,7 @@ class IntegratedAnalyzer(BaseAnalyzer):
             # 尝试加载Topic列表
             if parsed_data_list:
                 first_file_dir = os.path.dirname(parsed_data_list[0].file_path)
-                fixed_summary_path = r"D:\github\lixiang\telescope\log\Summary_Report.json"
-                summary_report_path = fixed_summary_path if os.path.exists(fixed_summary_path) else os.path.join(first_file_dir, "Summary_Report.json")
+                summary_report_path = os.path.join(first_file_dir, "Summary_Report.json")
                 
                 if os.path.exists(summary_report_path):
                     self.soa_analyzer.load_topic_list(summary_report_path)

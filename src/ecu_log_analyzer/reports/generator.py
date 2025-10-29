@@ -151,8 +151,7 @@ class ReportGenerator:
         try:
             # 加载Topic列表
             if parsed_data_list and len(parsed_data_list) > 0:
-                fixed_summary_path = r"D:\github\lixiang\telescope\log\Summary_Report.json"
-                summary_report_path = fixed_summary_path if os.path.exists(fixed_summary_path) else os.path.join(os.path.dirname(parsed_data_list[0].file_path), "Summary_Report.json")
+                summary_report_path = os.path.join(os.path.dirname(parsed_data_list[0].file_path), "Summary_Report.json")
                 if os.path.exists(summary_report_path):
                     soa_analyzer.load_topic_list(summary_report_path)
                     
@@ -180,8 +179,7 @@ class ReportGenerator:
                             result.soa_charts_data = {
                                 "topic_charts": topic_charts_data,
                                 "summary_chart": summary_chart_data,
-                                "log_details": soa_analyzer.get_log_details(),
-                                "topic_list": soa_analyzer.topic_list
+                                "log_details": soa_analyzer.get_log_details()
                             }
                             self.logger.info(f"SOA图表数据生成成功: {len(topic_charts_data)} 个Topic图表, 1个汇总图表")
                         else:

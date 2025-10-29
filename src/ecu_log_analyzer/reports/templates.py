@@ -601,39 +601,8 @@ class TemplateManager:
                 }
             }
             
-            // 时间范围过滤函数（适配time类型xAxis和二维数组数据格式）
-            function filterChartData(option, startTime, endTime) {
-                try {
-                    if (!option || !option.series) return option;
-                    
-                    // 如果没有设置时间范围，直接返回原数据
-                    if (!startTime && !endTime) return option;
-                    
-                    const clone = JSON.parse(JSON.stringify(option));
-                    
-                    // 过滤每个系列的数据（数据格式为 [[timestamp, value], ...]）
-                    if (clone.series && Array.isArray(clone.series)) {
-                        clone.series.forEach(s => {
-                            if (s.data && Array.isArray(s.data)) {
-                                s.data = s.data.filter(item => {
-                                    if (!Array.isArray(item) || item.length < 2) return true;
-                                    const timestamp = item[0];
-                                    if (startTime && timestamp < startTime) return false;
-                                    if (endTime && timestamp > endTime) return false;
-                                    return true;
-                                });
-                            }
-                        });
-                    }
-                    
-                    return clone;
-                } catch (e) {
-                    console.error('filterChartData错误:', e);
-                    return option;
-                }
-            }
-            
-            function showTopicChart(topicLabel) {
+            // 显示指定Topic的图表
+            function showTopicChart(topicName) {
                 try {
                     const chartContainer = document.getElementById('soaTopicChart');
                     const titleEl = document.getElementById('selectedTopicTitle');
@@ -641,47 +610,40 @@ class TemplateManager:
                     
                     if (chartContainer && titleEl && topicInfo) {
                         // 更新标题
-                        titleEl.textContent = 'SOA Topic数据分析: ' + topicLabel;
+                        titleEl.textContent = 'SOA Topic数据分析: ' + topicName;
                         
                         // 更新Topic信息
                         if (window.soaData && window.soaData.statistics) {
                             const stats = window.soaData.statistics;
                             topicInfo.innerHTML = '<div class="topic-stats">' +
-                                '<p><strong>Topic名称:</strong> ' + topicLabel + '</p>' +
+                                '<p><strong>Topic名称:</strong> ' + topicName + '</p>' +
                                 '<p><strong>总Topic数:</strong> ' + (stats.topic_count || 0) + '</p>' +
                                 '<p><strong>数据点数量:</strong> ' + (stats.data_points || 0) + '</p>' +
                                 '<p><strong>包含SOA数据文件:</strong> ' + (stats.file_count || 0) + '</p>' +
                                 '</div>';
                         }
                         
-                        // 兼容重复标签：移除 (send) 后查找图数据
-                        const baseTopic = topicLabel.replace(' (send)', '');
-                        const rawOption = window.topicCharts ? window.topicCharts[baseTopic] : null;
-                        if (!rawOption) {
-                            chartContainer.innerHTML = '<div class="error-message">未找到Topic数据: ' + topicLabel + '</div>';
-                            return;
-                        }
-                        
-                        // 时间过滤输入
-                        const startVal = (document.getElementById('startTime') || {}).value || '';
-                        const endVal = (document.getElementById('endTime') || {}).value || '';
-                        const filteredOption = filterChartData(rawOption, startVal.trim(), endVal.trim());
-                        
-                        // 初始化或更新单个图（接收/发送/丢失三条折线叠加）
+                        // 初始化图表
                         if (window.currentChart) {
                             window.currentChart.dispose();
                         }
-                        window.currentChart = echarts.init(chartContainer);
-                        window.currentChart.setOption(filteredOption);
                         
-                        // 窗口大小变化监听
-                        window.addEventListener('resize', function() {
-                            if (window.currentChart) {
-                                window.currentChart.resize();
-                            }
-                        });
-                        
-                        console.log('Topic图表 ' + topicLabel + ' 显示成功');
+                        const chartData = window.topicCharts[topicName];
+                        if (chartData) {
+                            window.currentChart = echarts.init(chartContainer);
+                            window.currentChart.setOption(chartData);
+                            
+                            // 添加窗口大小变化监听
+                            window.addEventListener('resize', function() {
+                                if (window.currentChart) {
+                                    window.currentChart.resize();
+                                }
+                            });
+                            
+                            console.log('Topic图表 ' + topicName + ' 显示成功');
+                        } else {
+                            chartContainer.innerHTML = '<div class="error-message">未找到Topic数据: ' + topicName + '</div>';
+                        }
                     }
                 } catch (error) {
                     console.error('显示Topic图表失败:', error);
@@ -714,63 +676,56 @@ class TemplateManager:
                 }
             }
             
-            // 生成Topic详细统计表格（按Summary_Report.json顺序，包含无数据项）
+            // 生成Topic详细统计表格
             function generateTopicDetailTable(data) {
                 try {
                     const tableBody = document.getElementById('soaTopicDetailTableBody');
                     if (!tableBody) return;
                     
-                    const topicList = (data.topic_list || (data.charts && data.charts.topic_list) || []);
-                    const topicCharts = data.charts && data.charts.topic_charts ? data.charts.topic_charts : {};
-                    let html = '';
-                    let index = 1;
-                    const occMap = {};
-                    
-                    topicList.forEach(topicName => {
-                        const count = (occMap[topicName] || 0) + 1;
-                        occMap[topicName] = count;
-                        const label = count === 2 ? (topicName + ' (send)') : topicName;
-                        const chartData = topicCharts[topicName];
-                        let totalSent = 0, totalReceived = 0, totalLost = 0;
-                        if (chartData && chartData.series && chartData.series.length > 0) {
-                            chartData.series.forEach(series => {
-                                if (series.name === '发送数据' && series.data) {
-                                    // 数据格式为 [[timestamp, count], ...]，需要提取count部分
-                                    totalSent = series.data.reduce((sum, item) => {
-                                        const val = Array.isArray(item) ? item[1] : item;
-                                        return sum + (val || 0);
-                                    }, 0);
-                                } else if (series.name === '接收数据' && series.data) {
-                                    // 数据格式为 [[timestamp, count], ...]
-                                    totalReceived = series.data.reduce((sum, item) => {
-                                        const val = Array.isArray(item) ? item[1] : item;
-                                        return sum + (val || 0);
-                                    }, 0);
-                                } else if (series.name === '丢失数据' && series.data) {
-                                    // 数据格式为 [[timestamp, count], ...]
-                                    totalLost = series.data.reduce((sum, item) => {
-                                        const val = Array.isArray(item) ? item[1] : item;
-                                        return sum + (val || 0);
-                                    }, 0);
-                                }
-                            });
-                        }
-                        const status = (totalSent > 0 || totalReceived > 0 || totalLost > 0) ? '有数据' : '无数据';
-                        const details = '发送: ' + totalSent + ', 接收: ' + totalReceived + ', 丢失: ' + totalLost;
+                    if (data.charts && data.charts.topic_charts) {
+                        const topicCharts = data.charts.topic_charts;
+                        let html = '';
+                        let index = 1;
                         
-                        html += '<tr>' +
-                            '<td>' + index + '</td>' +
-                            '<td>' + label + '</td>' +
-                            '<td>' + totalSent + '</td>' +
-                            '<td>' + totalReceived + '</td>' +
-                            '<td>' + totalLost + '</td>' +
-                            '<td>' + status + '</td>' +
-                            '<td>' + details + '</td>' +
-                            '</tr>';
-                        index++;
-                    });
-                    
-                    tableBody.innerHTML = html || '<tr><td colspan="7">暂无Topic详细统计数据</td></tr>';
+                        Object.keys(topicCharts).forEach(topicName => {
+                            const chartData = topicCharts[topicName];
+                            if (chartData && chartData.series && chartData.series.length > 0) {
+                                // 计算发送、接收和丢失数据总数
+                                let totalSent = 0, totalReceived = 0, totalLost = 0;
+                                chartData.series.forEach(series => {
+                                    if (series.name === '发送数据' && series.data) {
+                                        totalSent = series.data.reduce((sum, val) => sum + (val || 0), 0);
+                                    } else if (series.name === '接收数据' && series.data) {
+                                        totalReceived = series.data.reduce((sum, val) => sum + (val || 0), 0);
+                                    } else if (series.name === '丢失数据' && series.data) {
+                                        totalLost = series.data.reduce((sum, val) => sum + (val || 0), 0);
+                                    }
+                                });
+                                
+                                const status = (totalSent > 0 || totalReceived > 0 || totalLost > 0) ? '有数据' : '无数据';
+                                const details = '发送: ' + totalSent + ', 接收: ' + totalReceived + ', 丢失: ' + totalLost;
+                                
+                                html += '<tr>' +
+                                    '<td>' + index + '</td>' +
+                                    '<td>' + topicName + '</td>' +
+                                    '<td>' + totalSent + '</td>' +
+                                    '<td>' + totalReceived + '</td>' +
+                                    '<td>' + totalLost + '</td>' +
+                                    '<td>' + status + '</td>' +
+                                    '<td>' + details + '</td>' +
+                                    '</tr>';
+                                index++;
+                            }
+                        });
+                        
+                        if (html) {
+                            tableBody.innerHTML = html;
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="7">暂无Topic详细统计数据</td></tr>';
+                        }
+                    } else {
+                        tableBody.innerHTML = '<tr><td colspan="7">暂无Topic详细统计数据</td></tr>';
+                    }
                 } catch (error) {
                     console.error('生成Topic详细统计表格失败:', error);
                 }
@@ -913,51 +868,36 @@ class TemplateManager:
                         if (fileCountEl) fileCountEl.textContent = data.statistics.file_count || 0;
                     }
                     
-                    // 初始化下拉菜单（按Summary_Report.json中的Topic顺序；第二次出现加上 (send)）
-                    window.topicCharts = data.charts && data.charts.topic_charts ? data.charts.topic_charts : {};
-                    const topicList = (data.topic_list || (data.charts && data.charts.topic_list) || []);
-                    const topicSelect = document.getElementById('topicSelect');
-                    if (topicSelect) {
-                        topicSelect.innerHTML = '<option value="">请选择Topic</option>';
-                        const occMap = {};
-                        topicList.forEach(name => {
-                            const count = (occMap[name] || 0) + 1;
-                            occMap[name] = count;
-                            const label = count === 2 ? (name + ' (send)') : name;
-                            const option = document.createElement('option');
-                            option.value = label;
-                            option.textContent = label;
-                            topicSelect.appendChild(option);
-                        });
-                        // 添加change事件监听
-                        topicSelect.addEventListener('change', function() {
-                            const selectedLabel = this.value;
-                            if (selectedLabel) {
-                                showTopicChart(selectedLabel);
-                            }
-                        });
-                        console.log('SOA Topic下拉菜单初始化成功，共 ' + topicList.length + ' 个Topic');
-                        // 动态添加时间过滤控件（精确到秒）
-                        const selector = document.querySelector('.topic-selector');
-                        if (selector) {
-                            const timeControls = document.createElement('div');
-                            timeControls.className = 'time-filter';
-                            timeControls.style.marginTop = '10px';
-                            timeControls.innerHTML = '<label>开始时间(YYYY-MM-DD HH:MM:SS): </label>' +
-                                '<input type="text" id="startTime" placeholder="2025-08-25 16:52:08" style="margin-right:10px;" />' +
-                                '<label>结束时间(YYYY-MM-DD HH:MM:SS): </label>' +
-                                '<input type="text" id="endTime" placeholder="2025-08-25 16:59:59" style="margin-right:10px;" />' +
-                                '<button id="applyTimeFilter" class="btn btn-primary" style="vertical-align:middle;">应用时间过滤</button>';
-                            selector.appendChild(timeControls);
-                            const applyBtn = document.getElementById('applyTimeFilter');
-                            if (applyBtn) {
-                                applyBtn.addEventListener('click', function() {
-                                    const currentLabel = topicSelect.value;
-                                    if (currentLabel) {
-                                        showTopicChart(currentLabel);
-                                    }
-                                });
-                            }
+                    // 初始化下拉菜单
+                    if (data.charts && data.charts.topic_charts && Object.keys(data.charts.topic_charts).length > 0) {
+                        window.topicCharts = data.charts.topic_charts;
+                        const topicNames = Object.keys(data.charts.topic_charts);
+                        
+                        const topicSelect = document.getElementById('topicSelect');
+                        if (topicSelect) {
+                            topicSelect.innerHTML = '<option value="">请选择Topic</option>';
+                            topicNames.forEach(topicName => {
+                                const option = document.createElement('option');
+                                option.value = topicName;
+                                option.textContent = topicName;
+                                topicSelect.appendChild(option);
+                            });
+                            
+                            // 添加change事件监听
+                            topicSelect.addEventListener('change', function() {
+                                const selectedTopic = this.value;
+                                if (selectedTopic) {
+                                    showTopicChart(selectedTopic);
+                                }
+                            });
+                            
+                            console.log('SOA Topic下拉菜单初始化成功，共 ' + topicNames.length + ' 个Topic');
+                        }
+                    } else {
+                        console.log('SOA Topic图表: 无数据');
+                        const topicInfo = document.getElementById('topicInfo');
+                        if (topicInfo) {
+                            topicInfo.innerHTML = '<p class="error-message">暂无SOA Topic数据</p>';
                         }
                     }
                     

@@ -282,8 +282,7 @@ class PureNewECUAnalyzer:
             # 查找目录中的日志文件
             log_files = []
             for file in os.listdir(directory):
-                ext = os.path.splitext(file)[1].lower()
-                if file.endswith(('.log', '.txt', '.out')) or ext == '':
+                if file.endswith(('.log', '.txt', '.out')):
                     log_files.append(os.path.join(directory, file))
             
             if not log_files:
