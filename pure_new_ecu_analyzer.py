@@ -104,9 +104,16 @@ class PureNewECUAnalyzer:
     
     def _search_in_directory(self, directory: str) -> Optional[str]:
         """在指定目录中查找map文件"""
-        map_file_path = os.path.join(directory, "BZCU_VecorARCode.map")
-        if os.path.exists(map_file_path):
-            return map_file_path
+        # 支持多种map文件名
+        map_file_names = [
+            "PZCU_VecorARCode.map",
+            "BZCU_VecorARCode.map",
+            "DZCU_VecorARCode.map",
+        ]
+        for map_name in map_file_names:
+            map_file_path = os.path.join(directory, map_name)
+            if os.path.exists(map_file_path):
+                return map_file_path
         return None
     
     def _search_in_subdirectories(self, parent_dir: str) -> Optional[str]:
@@ -116,16 +123,18 @@ class PureNewECUAnalyzer:
             
         # 常见的子目录名称
         subdirs = ["map", "maps", "symbols", "debug", "build", "output", "bin"]
+        map_file_names = ["PZCU_VecorARCode.map", "BZCU_VecorARCode.map", "DZCU_VecorARCode.map"]
         
         for subdir in subdirs:
             subdir_path = os.path.join(parent_dir, subdir)
             if os.path.exists(subdir_path) and os.path.isdir(subdir_path):
-                map_file_path = os.path.join(subdir_path, "BZCU_VecorARCode.map")
-                if os.path.exists(map_file_path):
-                    return map_file_path
+                for map_name in map_file_names:
+                    map_file_path = os.path.join(subdir_path, map_name)
+                    if os.path.exists(map_file_path):
+                        return map_file_path
         return None
     
-    def _search_common_directories(self) -> List[str]:
+    def _search_common_directories(self) -> Optional[str]:
         """搜索常见项目目录"""
         common_paths = [
             "./data/sample_logs/BZCU_VecorARCode.map",
@@ -137,12 +146,10 @@ class PureNewECUAnalyzer:
             "../ecu_info_check/BZCU_VecorARCode.map"
         ]
         
-        checked = []
         for path in common_paths:
-            checked.append(path)
             if os.path.exists(path):
                 return path
-        return checked
+        return None
     
     def _search_recursive_from_dir(self, start_dir: str) -> Optional[str]:
         """从指定目录开始递归搜索（仅在必要时使用）"""
@@ -282,7 +289,8 @@ class PureNewECUAnalyzer:
             # 查找目录中的日志文件
             log_files = []
             for file in os.listdir(directory):
-                if file.endswith(('.log', '.txt', '.out')):
+                ext = os.path.splitext(file)[1].lower()
+                if file.endswith(('.log', '.txt', '.out')) or ext == '':
                     log_files.append(os.path.join(directory, file))
             
             if not log_files:

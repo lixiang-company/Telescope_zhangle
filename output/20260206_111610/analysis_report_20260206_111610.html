@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECU日志分析报告</title>
+    <!-- 引入ECharts -->
+    <script src="static/echarts.min.js"></script>
+    <link rel="stylesheet" href="static/main.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="nav-logo">🔍</span>
+                <span class="nav-title">ECU日志分析系统</span>
+                <div class="nav-project-info">
+                    <span class="project-name">PZCU</span>
+                    <span class="baseline-version">0x003D</span>
+                </div>
+            </div>
+            <div class="nav-menu">
+                <a href="analysis_report_20260206_111610.html" class="nav-link" id="nav-ecu">
+                    <span class="nav-icon">📊</span>
+                    ECU分析报告
+                </a>
+                <a href="soa_analysis_20260206_111610.html" class="nav-link" id="nav-soa">
+                    <span class="nav-icon">📡</span>
+                    SOA分析报告
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>ECU日志分析报告</h1>
+            <div class="subtitle">生成时间: 2026-02-06 11:09:37 | 分析文件: 88 个 | 有效文件: 88 个</div>
+            <div class="nav-tabs"></div>
+        </div>
+        <div class="content"><!-- 分析概览 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>分析概览</h2>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">88</div>
+            <div class="stat-label">总文件数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">88</div>
+            <div class="stat-label">有效文件数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">1</div>
+            <div class="stat-label">项目数量</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">4</div>
+            <div class="stat-label">CPU核心数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">TRAP重启数</div>
+        </div>
+    </div>
+</div>
+
+<!-- 项目信息已移至导航栏标题中 -->
+
+<!-- 数据可视化分析 -->
+<div class="section charts-section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>CPU负载率分析</h2>
+    </div>
+    
+    <!-- 核负载率统计图表 -->
+    <div class="chart-wrapper">
+        <h3>CPU核心负载率统计</h3>
+        <div id="coreLoadsChart" class="chart-container"></div>
+    </div>
+    
+    <!-- 项目对比图表 -->
+    <div class="chart-wrapper">
+        <h3>项目负载率对比</h3>
+        <div id="comparisonChart" class="chart-container"></div>
+    </div>
+    
+    <!-- 趋势分析图表 -->
+    <div class="chart-wrapper">
+        <h3>CPU负载率趋势分析</h3>
+        <div id="trendChart" class="chart-container"></div>
+    </div>
+    
+    <!-- TRAP重启图表 -->
+    <div class="chart-wrapper">
+        <h3>TRAP重启事件分析</h3>
+        <div id="trapRestartChart" class="chart-container"></div>
+    </div>
+</div>
+
+<!-- 核负载率统计表格 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>CPU核心负载率统计</h2>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>核心编号</th>
+                    <th>平均负载率(%)</th>
+                    <th>最大负载率(%)</th>
+                    <th>最小负载率(%)</th>
+                    <th>负载状态</th>
+                </tr>
+            </thead>
+            <tbody id="loadStatsTableBody">
+                <tr>
+                <td>Core 0</td>
+                <td>79.92</td>
+                <td>82.91</td>
+                <td>77.60</td>
+                <td><span class="status-medium">中等负载</span></td>
+            </tr>
+<tr>
+                <td>Core 1</td>
+                <td>73.44</td>
+                <td>74.72</td>
+                <td>72.98</td>
+                <td><span class="status-medium">中等负载</span></td>
+            </tr>
+<tr>
+                <td>Core 2</td>
+                <td>44.07</td>
+                <td>44.21</td>
+                <td>43.96</td>
+                <td><span class="status-low">低负载</span></td>
+            </tr>
+<tr>
+                <td>Core 3</td>
+                <td>35.26</td>
+                <td>37.45</td>
+                <td>32.92</td>
+                <td><span class="status-low">低负载</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- TRAP重启信息 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>TRAP重启事件信息</h2>
+    </div>
+    <div class="trap-info-container">
+        <div class="trap-summary">
+            <p><strong>TRAP重启次数:</strong> <span id="trapCountDisplay">0</span></p>
+            <p><strong>重启类型:</strong> <span id="trapTypesDisplay">无</span></p>
+            <p><strong>涉及函数:</strong> <span id="trapFunctionsDisplay">无</span></p>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>重启类型</th>
+                        <th>DEADD地址</th>
+                        <th>函数地址</th>
+                        <th>参数名</th>
+                        <th>函数名</th>
+                        <th>重启原因</th>
+                    </tr>
+                </thead>
+                <tbody id="trapInfoTableBody">
+                    <tr><td colspan="7">暂无TRAP信息</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 文件详情表格 -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-icon"></div>
+        <h2>文件详情</h2>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>文件名</th>
+                    <th>项目名</th>
+                    <th>基线版本</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody id="fileDetailsTableBody">
+                <tr>
+                <td>1</td>
+                <td>XVM_PZCU-30023800001010610-2026_02_02_13_08_29+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>2</td>
+                <td>XVM_PZCU-30023800001010611-2026_02_02_15_41_44+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>3</td>
+                <td>XVM_PZCU-30023800002010610-2026_02_02_13_10_48+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>4</td>
+                <td>XVM_PZCU-30023800002010611-2026_02_02_15_45_40+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>5</td>
+                <td>XVM_PZCU-30023800003010610-2026_02_02_13_13_00+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>6</td>
+                <td>XVM_PZCU-30023800003010611-2026_02_02_15_49_58+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>7</td>
+                <td>XVM_PZCU-30023800004010610-2026_02_02_13_15_06+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>8</td>
+                <td>XVM_PZCU-30023800004010611-2026_02_02_15_52_11+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>9</td>
+                <td>XVM_PZCU-30023800005010610-2026_02_02_13_17_06+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>10</td>
+                <td>XVM_PZCU-30023800005010611-2026_02_02_15_54_34+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>11</td>
+                <td>XVM_PZCU-30023800006010610-2026_02_02_13_19_52+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>12</td>
+                <td>XVM_PZCU-30023800006010611-2026_02_02_15_56_27+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>13</td>
+                <td>XVM_PZCU-30023800007010610-2026_02_02_13_21_50+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>14</td>
+                <td>XVM_PZCU-30023800007010611-2026_02_02_15_58_22+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>15</td>
+                <td>XVM_PZCU-30023800008010610-2026_02_02_13_24_16+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>16</td>
+                <td>XVM_PZCU-30023800009010610-2026_02_02_13_26_17+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>17</td>
+                <td>XVM_PZCU-30023800010010610-2026_02_02_13_28_42+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>18</td>
+                <td>XVM_PZCU-30023800011010610-2026_02_02_13_31_08+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>19</td>
+                <td>XVM_PZCU-30023800012010610-2026_02_02_13_33_25+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>20</td>
+                <td>XVM_PZCU-30023800013010610-2026_02_02_13_35_52+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>21</td>
+                <td>XVM_PZCU-30023800014010610-2026_02_02_13_38_09+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>22</td>
+                <td>XVM_PZCU-30023800015010610-2026_02_02_13_40_46+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>23</td>
+                <td>XVM_PZCU-30023800016010610-2026_02_02_13_43_59+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>24</td>
+                <td>XVM_PZCU-30023800017010610-2026_02_02_13_46_30+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>25</td>
+                <td>XVM_PZCU-30023800018010610-2026_02_02_13_48_41+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>26</td>
+                <td>XVM_PZCU-30023800019010610-2026_02_02_13_50_39+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>27</td>
+                <td>XVM_PZCU-30023800020010610-2026_02_02_13_53_31+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>28</td>
+                <td>XVM_PZCU-30023800021010610-2026_02_02_13_56_01+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>29</td>
+                <td>XVM_PZCU-30023800022010610-2026_02_02_13_58_53+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>30</td>
+                <td>XVM_PZCU-30023800023010610-2026_02_02_14_00_50+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>31</td>
+                <td>XVM_PZCU-30023800024010610-2026_02_02_14_03_03+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>32</td>
+                <td>XVM_PZCU-30023800025010610-2026_02_02_14_05_45+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>33</td>
+                <td>XVM_PZCU-30023800026010610-2026_02_02_14_08_37+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>34</td>
+                <td>XVM_PZCU-30023800027010610-2026_02_02_14_11_10+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>35</td>
+                <td>XVM_PZCU-30023800028010610-2026_02_02_14_13_18+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>36</td>
+                <td>XVM_PZCU-30023800029010610-2026_02_02_14_15_36+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>37</td>
+                <td>XVM_PZCU-30023800030010610-2026_02_02_14_17_35+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>38</td>
+                <td>XVM_PZCU-30023800031010610-2026_02_02_14_19_38+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>39</td>
+                <td>XVM_PZCU-30023800032010610-2026_02_02_14_21_34+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>40</td>
+                <td>XVM_PZCU-30023800033010610-2026_02_02_14_23_24+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>41</td>
+                <td>XVM_PZCU-30023800034010610-2026_02_02_14_26_00+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>42</td>
+                <td>XVM_PZCU-30023800035010610-2026_02_02_14_28_22+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>43</td>
+                <td>XVM_PZCU-30023800036010610-2026_02_02_14_30_51+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>44</td>
+                <td>XVM_PZCU-30023800037010610-2026_02_02_14_33_03+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>45</td>
+                <td>XVM_PZCU-30023800038010610-2026_02_02_14_35_02+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>46</td>
+                <td>XVM_PZCU-30023800039010610-2026_02_02_14_37_11+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>47</td>
+                <td>XVM_PZCU-30023800040010610-2026_02_02_14_39_25+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>48</td>
+                <td>XVM_PZCU-30023800041010610-2026_02_02_14_41_30+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>49</td>
+                <td>XVM_PZCU-30023800042010610-2026_02_02_14_43_22+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>50</td>
+                <td>XVM_PZCU-30023800043010610-2026_02_02_14_45_17+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>51</td>
+                <td>XVM_PZCU-30023800044010610-2026_02_02_14_47_09+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>52</td>
+                <td>XVM_PZCU-30023800045010610-2026_02_02_14_49_58+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>53</td>
+                <td>XVM_PZCU-30023800046010610-2026_02_02_14_52_30+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>54</td>
+                <td>XVM_PZCU-30023800047010610-2026_02_02_14_54_20+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>55</td>
+                <td>XVM_PZCU-30023800048010610-2026_02_02_14_56_12+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>56</td>
+                <td>XVM_PZCU-30023800049010610-2026_02_02_14_58_29+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>57</td>
+                <td>XVM_PZCU-30023800050010610-2026_02_02_15_00_28+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>58</td>
+                <td>XVM_PZCU-30023800051010610-2026_02_02_15_02_20+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>59</td>
+                <td>XVM_PZCU-30023800052010610-2026_02_02_15_04_21+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>60</td>
+                <td>XVM_PZCU-30023800053010610-2026_02_02_15_06_00+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>61</td>
+                <td>XVM_PZCU-30023800054010610-2026_02_02_15_08_09+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>62</td>
+                <td>XVM_PZCU-30023800055010610-2026_02_02_15_10_22+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>63</td>
+                <td>XVM_PZCU-30023800056010610-2026_02_02_15_12_29+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>64</td>
+                <td>XVM_PZCU-30023800057010610-2026_02_02_15_14_33+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>65</td>
+                <td>XVM_PZCU-30023800058010610-2026_02_02_15_16_38+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>66</td>
+                <td>XVM_PZCU-30023800059010610-2026_02_02_15_18_53+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>67</td>
+                <td>XVM_PZCU-30023800060010610-2026_02_02_15_21_17+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>68</td>
+                <td>XVM_PZCU-30023800061010610-2026_02_02_15_23_26+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>69</td>
+                <td>XVM_PZCU-30023800062010610-2026_02_02_15_25_34+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>70</td>
+                <td>XVM_PZCU-30023800063010610-2026_02_02_15_27_30+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>71</td>
+                <td>XVM_PZCU-30023800064010610-2026_02_02_15_29_54+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>72</td>
+                <td>XVM_PZCU-30023800065010610-2026_02_02_15_32_30+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>73</td>
+                <td>XVM_PZCU-30023800066010610-2026_02_02_15_35_00+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>74</td>
+                <td>XVM_PZCU-30023800067010610-2026_02_02_15_39_08+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>75</td>
+                <td>XVM_PZCU-30023801001010609-2026_02_02_12_38_14+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>76</td>
+                <td>XVM_PZCU-30023801002010609-2026_02_02_12_40_29+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>77</td>
+                <td>XVM_PZCU-30023801003010609-2026_02_02_12_42_35+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>78</td>
+                <td>XVM_PZCU-30023801004010609-2026_02_02_12_45_15+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>79</td>
+                <td>XVM_PZCU-30023801005010609-2026_02_02_12_47_36+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>80</td>
+                <td>XVM_PZCU-30023801006010609-2026_02_02_12_49_33+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>81</td>
+                <td>XVM_PZCU-30023801007010609-2026_02_02_12_51_38+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>82</td>
+                <td>XVM_PZCU-30023801008010609-2026_02_02_12_53_52+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>83</td>
+                <td>XVM_PZCU-30023801009010609-2026_02_02_12_55_56+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>84</td>
+                <td>XVM_PZCU-30023801010010609-2026_02_02_12_58_33+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>85</td>
+                <td>XVM_PZCU-30023801011010609-2026_02_02_13_00_43+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>86</td>
+                <td>XVM_PZCU-30023801012010609-2026_02_02_13_03_00+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>87</td>
+                <td>XVM_PZCU-30023801013010609-2026_02_02_13_05_10+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+<tr>
+                <td>88</td>
+                <td>XVM_PZCU-30023801014010609-2026_02_02_13_07_21+0800.log</td>
+                <td>PZCU</td>
+                <td>0x003D</td>
+                <td><span class="status-valid">有效</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div></div>
+    </div>
+    
+    <script>
+            // 初始化核负载率统计图表
+            window.coreLoadsChartData = {"title": {"text": "CPU核心负载率统计", "left": "center", "textStyle": {"fontSize": 16, "fontWeight": "bold"}}, "tooltip": {"trigger": "axis", "axisPointer": {"type": "shadow"}}, "legend": {"data": ["平均负载率", "最大负载率", "最小负载率"], "top": 30}, "grid": {"left": "3%", "right": "4%", "bottom": "3%", "containLabel": true}, "xAxis": {"type": "category", "data": ["Core0", "Core1", "Core2", "Core3"], "axisTick": {"alignWithLabel": true}}, "yAxis": {"type": "value", "name": "负载率 (%)", "max": 100, "min": 0}, "series": [{"name": "平均负载率", "type": "bar", "data": [79.92, 73.44, 44.07, 35.26], "itemStyle": {"color": {"type": "linear", "x": 0, "y": 0, "x2": 0, "y2": 1, "colorStops": [{"offset": 0, "color": "#667eea"}, {"offset": 1, "color": "#764ba2"}]}}, "markLine": {"data": [{"yAxis": 80, "name": "高负载阀值", "lineStyle": {"color": "#ff4d4f"}}, {"yAxis": 60, "name": "中等负载阀值", "lineStyle": {"color": "#faad14"}}]}}, {"name": "最大负载率", "type": "line", "data": [82.91, 74.72, 44.21, 37.45], "itemStyle": {"color": "#ff4d4f"}, "lineStyle": {"width": 2}}, {"name": "最小负载率", "type": "line", "data": [77.6, 72.98, 43.96, 32.92], "itemStyle": {"color": "#52c41a"}, "lineStyle": {"width": 2}}]};
+            if (document.getElementById('coreLoadsChart')) {
+                var coreLoadsChart = echarts.init(document.getElementById('coreLoadsChart'));
+                coreLoadsChart.setOption(window.coreLoadsChartData);
+                
+                window.addEventListener('resize', function() {
+                    coreLoadsChart.resize();
+                });
+            }
+
+            // 初始化趋势图表
+            window.trendChartData = {"title": {"text": "CPU负载率趋势分析", "left": "center", "textStyle": {"fontSize": 16, "fontWeight": "bold"}}, "tooltip": {"trigger": "axis", "axisPointer": {"type": "cross"}}, "legend": {"data": ["Core0", "Core1", "Core2", "Core3"], "top": 30, "type": "scroll"}, "grid": {"left": "3%", "right": "4%", "bottom": "3%", "containLabel": true}, "xAxis": {"type": "category", "data": ["2026_02_02_12_38_14", "2026_02_02_12_40_29", "2026_02_02_12_42_35", "2026_02_02_12_45_15", "2026_02_02_12_47_36", "2026_02_02_12_49_33", "2026_02_02_12_51_38", "2026_02_02_12_53_52", "2026_02_02_12_55_56", "2026_02_02_12_58_33", "2026_02_02_13_00_43", "2026_02_02_13_03_00", "2026_02_02_13_05_10", "2026_02_02_13_07_21", "2026_02_02_13_08_29", "2026_02_02_13_10_48", "2026_02_02_13_13_00", "2026_02_02_13_15_06", "2026_02_02_13_17_06", "2026_02_02_13_19_52", "2026_02_02_13_21_50", "2026_02_02_13_24_16", "2026_02_02_13_26_17", "2026_02_02_13_28_42", "2026_02_02_13_31_08", "2026_02_02_13_33_25", "2026_02_02_13_35_52", "2026_02_02_13_38_09", "2026_02_02_13_40_46", "2026_02_02_13_43_59", "2026_02_02_13_46_30", "2026_02_02_13_48_41", "2026_02_02_13_50_39", "2026_02_02_13_53_31", "2026_02_02_13_56_01", "2026_02_02_13_58_53", "2026_02_02_14_00_50", "2026_02_02_14_03_03", "2026_02_02_14_05_45", "2026_02_02_14_08_37", "2026_02_02_14_11_10", "2026_02_02_14_13_18", "2026_02_02_14_15_36", "2026_02_02_14_17_35", "2026_02_02_14_19_38", "2026_02_02_14_21_34", "2026_02_02_14_23_24", "2026_02_02_14_26_00", "2026_02_02_14_28_22", "2026_02_02_14_30_51", "2026_02_02_14_33_03", "2026_02_02_14_35_02", "2026_02_02_14_37_11", "2026_02_02_14_39_25", "2026_02_02_14_41_30", "2026_02_02_14_43_22", "2026_02_02_14_45_17", "2026_02_02_14_47_09", "2026_02_02_14_49_58", "2026_02_02_14_52_30", "2026_02_02_14_54_20", "2026_02_02_14_56_12", "2026_02_02_14_58_29", "2026_02_02_15_00_28", "2026_02_02_15_02_20", "2026_02_02_15_04_21", "2026_02_02_15_06_00", "2026_02_02_15_08_09", "2026_02_02_15_10_22", "2026_02_02_15_12_29", "2026_02_02_15_14_33", "2026_02_02_15_16_38", "2026_02_02_15_18_53", "2026_02_02_15_21_17", "2026_02_02_15_23_26", "2026_02_02_15_25_34", "2026_02_02_15_27_30", "2026_02_02_15_29_54", "2026_02_02_15_32_30", "2026_02_02_15_35_00", "2026_02_02_15_39_08", "2026_02_02_15_41_44", "2026_02_02_15_45_40", "2026_02_02_15_49_58", "2026_02_02_15_52_11", "2026_02_02_15_54_34", "2026_02_02_15_56_27", "2026_02_02_15_58_22"], "boundaryGap": false}, "yAxis": {"type": "value", "name": "负载率 (%)", "max": 100, "min": 0}, "series": [{"name": "Core0", "type": "line", "data": [80.75, 77.77, 79.53, 80.9, 79.87, 79.42, 79.54, 78.44, 78.77, 78.48, 81.22, 79.92, 78.45, 79.63, 80.87, 79.06, 79.81, 78.62, 80.71, 80.22, 80.66, 79.92, 77.77, 80.28, 80.13, 79.91, 79.55, 77.76, 79.11, 80.4, 80.73, 78.08, 80.49, 77.6, 79.24, 79.82, 79.18, 77.88, 79.31, 79.04, 78.52, 80.81, 79.94, 80.13, 80.33, 78.59, 78.51, 80.54, 80.19, 79.65, 79.37, 79.52, 79.83, 80.74, 81.89, 79.99, 78.37, 79.36, 80.48, 81.38, 80.02, 80.98, 82.91, 81.74, 81.17, 80.08, 81.11, 80.69, 79.44, 81.79, 80.49, 80.96, 82.61, 79.71, 81.65, 79.58, 78.06, 80.17, 80.25, 80.23, 77.69, 79.99, 79.98, 80.53, 81.43, 79.48, 81.8, 81.61], "itemStyle": {"color": "#667eea"}, "lineStyle": {"width": 2}, "symbol": "circle", "symbolSize": 6, "connectNulls": false}, {"name": "Core1", "type": "line", "data": [73.23, 73.38, 73.29, 73.34, 73.11, 73.09, 73.33, 73.17, 73.18, 73.36, 73.5, 73.12, 73.13, 73.18, 73.19, 73.14, 73.15, 73.12, 73.27, 73.2, 73.27, 73.43, 73.24, 73.27, 72.98, 73.12, 73.13, 73.27, 73.23, 73.21, 73.19, 73.19, 73.24, 73.29, 73.28, 73.19, 73.27, 73.11, 73.26, 73.1, 73.25, 73.21, 73.17, 73.2, 73.31, 73.24, 73.17, 73.32, 73.47, 73.26, 73.23, 73.23, 73.27, 73.24, 73.26, 73.28, 73.23, 73.6, 73.58, 73.69, 74.28, 73.81, 74.36, 74.47, 74.37, 73.76, 74.54, 74.13, 73.91, 74.43, 74.61, 74.72, 74.22, 73.48, 73.39, 73.3, 73.33, 73.31, 73.29, 73.21, 73.4, 73.28, 73.28, 73.3, 73.79, 73.8, 74.25, 73.34], "itemStyle": {"color": "#764ba2"}, "lineStyle": {"width": 2}, "symbol": "circle", "symbolSize": 6, "connectNulls": false}, {"name": "Core2", "type": "line", "data": [44.18, 44.09, 44.12, 44.13, 44.16, 44.16, 44.14, 44.07, 44.07, 44.03, 44.16, 44.05, 44.04, 44.14, 44.13, 44.19, 44.05, 44.15, 44.09, 44.05, 44.07, 44.21, 44.11, 44.1, 44.02, 44.0, 44.1, 44.09, 44.02, 44.05, 44.1, 44.09, 44.0, 44.09, 44.12, 44.05, 44.07, 44.02, 44.07, 44.0, 44.04, 44.0, 44.09, 44.09, 44.1, 44.08, 44.08, 44.02, 44.02, 44.1, 44.11, 43.99, 44.03, 44.0, 43.96, 44.06, 44.03, 43.96, 44.09, 43.96, 44.01, 44.06, 44.04, 44.01, 44.13, 44.11, 44.08, 44.02, 44.03, 44.06, 44.06, 44.12, 43.98, 44.05, 44.14, 44.08, 44.15, 44.05, 43.96, 44.07, 44.14, 44.12, 44.05, 44.12, 44.06, 44.04, 44.03, 44.09], "itemStyle": {"color": "#ff6b6b"}, "lineStyle": {"width": 2}, "symbol": "circle", "symbolSize": 6, "connectNulls": false}, {"name": "Core3", "type": "line", "data": [35.33, 34.51, 34.14, 35.36, 33.86, 34.78, 34.8, 34.86, 34.73, 34.99, 34.58, 32.92, 34.38, 34.31, 35.08, 34.68, 35.25, 34.56, 35.16, 35.34, 35.36, 35.29, 34.85, 35.54, 34.7, 34.78, 35.13, 34.85, 34.36, 34.83, 35.06, 35.04, 35.36, 35.0, 35.14, 35.41, 34.78, 34.55, 35.17, 34.68, 35.39, 36.35, 35.57, 35.96, 36.27, 36.47, 35.05, 36.54, 34.41, 34.68, 35.91, 35.49, 34.75, 34.77, 35.07, 35.26, 34.63, 35.04, 36.17, 34.81, 35.7, 36.02, 37.21, 37.35, 36.91, 35.36, 37.23, 35.74, 35.46, 37.12, 35.83, 37.45, 36.54, 35.52, 34.97, 35.48, 35.1, 34.84, 34.62, 35.1, 35.13, 35.78, 35.54, 35.78, 33.45, 35.1, 36.29, 34.56], "itemStyle": {"color": "#4ecdc4"}, "lineStyle": {"width": 2}, "symbol": "circle", "symbolSize": 6, "connectNulls": false}]};
+            if (document.getElementById('trendChart')) {
+                var trendChart = echarts.init(document.getElementById('trendChart'));
+                trendChart.setOption(window.trendChartData);
+                
+                window.addEventListener('resize', function() {
+                    trendChart.resize();
+                });
+            }</script>
+</body>
+</html>

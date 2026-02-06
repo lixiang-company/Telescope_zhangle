@@ -134,7 +134,9 @@ class LogParser:
         log_files = []
         for root, _dirs, files in os.walk(directory):
             for name in files:
-                if any(name.lower().endswith(ext) for ext in self.cfg.system.log_extensions):
+                # 兼容无后缀文件
+                has_ext = os.path.splitext(name)[1] != ""
+                if any(name.lower().endswith(ext) for ext in self.cfg.system.log_extensions) or not has_ext:
                     log_files.append(os.path.join(root, name))
         
         if not log_files:
@@ -224,9 +226,13 @@ class LogParser:
         return None
 
     def _extract_core_loads(self, content: str) -> List[float]:
-        loads_strs = re.findall(r'\[CPU_LOAD\]:core\s+load:\s*([\d.,\s]+?)(?=,\s*mcu_version|\n|$)', content, re.IGNORECASE)
+        # 支持多种格式:
+        # 1. [CPU_LOAD]:core load: 10,20,30,40, mcu_version:...
+        # 2. [CPU_LOAD]:core load: 81.01, 74.16, 44.12, 35.66, flash_crc_data:..., mcu_version:...
+        # 3. core load: 10,20,30,40, mcu_version:...
+        loads_strs = re.findall(r'\[CPU_LOAD\]:core\s+load:\s*([\d.,\s]+?)(?=,\s*(?:flash_crc_data|mcu_version)|\n|$)', content, re.IGNORECASE)
         if not loads_strs:
-            loads_strs = re.findall(r'core\s+load:\s*([\d.,\s]+?)(?=,\s*mcu_version|\n|$)', content, re.IGNORECASE)
+            loads_strs = re.findall(r'core\s+load:\s*([\d.,\s]+?)(?=,\s*(?:flash_crc_data|mcu_version)|\n|$)', content, re.IGNORECASE)
         if loads_strs:
             latest = loads_strs[-1]
             try:
